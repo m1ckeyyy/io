@@ -1,0 +1,655 @@
+═══════════════════════════════════════════════════════════════════════════════
+           PROJEKT IO - PROBLEM KOMIWOJAŻERA (TSP)
+           Inżynieria Obliczeniowa - Semestr Zimowy 2025/2026
+═══════════════════════════════════════════════════════════════════════════════
+
+SKŁAD GRUPY (4 osoby):
+----------------------
+1. Klaudia Rajca
+2. Aleksandra Konopelska
+3. Mikołaj Krawczyński
+4. Patrycja Stępień
+
+
+═══════════════════════════════════════════════════════════════════════════════
+1. STRUKTURA PROJEKTU
+═══════════════════════════════════════════════════════════════════════════════
+
+PROJEKT_IO/
+├── main.py                    # Punkt startowy programu
+├── algorithms/                # Implementacje algorytmów
+│   ├── __init__.py
+│   ├── nn.py                 # Nearest Neighbor
+│   ├── ihc.py                # Iterative Hill Climbing
+│   ├── sa.py                 # Simulated Annealing
+│   ├── ts.py                 # Tabu Search
+│   └── ga.py                 # Genetic Algorithm
+├── experiments/               # Framework testowy
+│   ├── __init__.py
+│   ├── run_tests.py          # Automatyczne testy wszystkich algorytmów
+│   └── runner.py             # Pomocnicze funkcje uruchamiania
+├── instances/                 # Dane testowe
+│   ├── Dane_TSP_48.tsp       # 49 miast
+│   ├── Dane_TSP_76.tsp       # 77 miast
+│   └── Dane_TSP_127.tsp      # 128 miast
+├── utils/                     # Moduły pomocnicze
+│   ├── __init__.py
+│   ├── loader.py             # Wczytywanie plików TSP
+│   ├── metrics.py            # Obliczanie kosztów tras
+│   ├── tsp.py                # Klasa TSP z macierzą odległości
+│   └── neighborhoods.py      # Operatory sąsiedztwa (swap, insert, two-opt)
+├── results/                   # Wyniki testów (pliki CSV)
+├── .venv/                    # Środowisko wirtualne Python
+├── pyvenv.cfg
+└── requirements.txt           # Zależności projektu
+
+
+═══════════════════════════════════════════════════════════════════════════════
+2. ZAIMPLEMENTOWANE ALGORYTMY (5 WYMAGANYCH)
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2.1. ALGORYTM NN (NEAREST NEIGHBOR)                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PLIK: algorithms/nn.py
+
+OPIS DZIAŁANIA:
+Algorytm zachłanny konstruujący trasę poprzez iteracyjny wybór najbliższego 
+nieodwiedzonego miasta. Startując z zadanego miasta, w każdym kroku algorytm 
+wybiera najbliższego sąsiada, aż odwiedzi wszystkie miasta i powróci do punktu 
+startowego.
+
+PARAMETRY TESTOWANE:
+- miasto_startowe: numer miasta początkowego (0 do n-1)
+- best_of_k: liczba różnych miast startowych do przetestowania, wybór najlepszego
+
+IMPLEMENTACJA TESTOWANIA:
+for start in range(min(5, tsp.n)):
+    route, length = nearest_neighbor(tsp, start=start)
+
+UZASADNIENIE WYBORU 5 MIAST STARTOWYCH:
+- min(5, tsp.n) zapewnia działanie dla małych i dużych instancji
+- Nie przeciąża obliczeń (dla TSP_127 testowanie 128 startów byłoby zbędne)
+- Daje powtarzalność wyników niezbędną do analizy porównawczej
+- Alternatywa (losowe starty) powodowałaby zmienne wyniki przy każdym uruchomieniu
+
+WYNIKI TESTÓW:
+┌──────────────┬──────────────────┬────────────────┐
+│  Instancja   │   Długość trasy  │  Czas [s]      │
+├──────────────┼──────────────────┼────────────────┤
+│ TSP_48       │      8965.17     │    0.0002      │
+│ TSP_76       │  2,699,580.70    │    0.0002      │
+│ TSP_127      │  3,438,520.84    │    0.0006      │
+└──────────────┴──────────────────┴────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2.2. ALGORYTM IHC (ITERATIVE HILL CLIMBING)                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PLIK: algorithms/ihc.py
+
+OPIS DZIAŁANIA:
+Algorytm wspinaczki z multistartem (IHC) wykonuje wielokrotne uruchomienia 
+lokalnego przeszukiwania, startując z różnych losowych rozwiązań początkowych. 
+W każdym restarcie algorytm iteracyjnie generuje sąsiednie rozwiązania i akceptuje 
+tylko te, które poprawiają obecną trasę (strategia hill climbing).
+
+PARAMETRY TESTOWANE:
+1. neighborhood: typ sąsiedztwa ("swap", "insert", "two_opt")
+2. iterations: liczba iteracji na jeden restart
+3. restarts: liczba restartów (multistart)
+4. no_improve_limit: maksymalna liczba iteracji bez poprawy (kryterium stopu)
+
+RODZAJE SĄSIEDZTW:
+- SWAP: zamiana dwóch losowych miast miejscami
+- INSERT: przeniesienie miasta z jednej pozycji w inne miejsce
+- TWO-OPT: odwrócenie fragmentu trasy między dwoma punktami
+
+PSEUDOKOD:
+for restart in 1..restarts:
+    current_route = losowa_permutacja()
+    current_cost = oblicz_koszt(current_route)
+    
+    for iter in 1..iterations:
+        neighbor = generuj_sąsiada(current_route, neighborhood)
+        neighbor_cost = oblicz_koszt(neighbor)
+        
+        if neighbor_cost < current_cost:  # tylko poprawa
+            current_route = neighbor
+            current_cost = neighbor_cost
+            
+    if current_cost < best_global_cost:
+        best_global = current_route
+
+WYNIKI TESTÓW:
+┌──────────────┬──────────────────┬────────────────┐
+│  Instancja   │   Długość trasy  │  Czas [s]      │
+├──────────────┼──────────────────┼────────────────┤
+│ TSP_48       │     8422.85      │    0.34        │
+│              │    10486.33*     │    0.03        │
+│ TSP_76       │  2,528,491.93    │    0.35        │
+│ TSP_127      │  4,516,277.54    │    0.41        │
+│              │ 11,844,655.13*   │    0.03        │
+└──────────────┴──────────────────┴────────────────┘
+* różne konfiguracje parametrów
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2.3. ALGORYTM SA (SIMULATED ANNEALING)                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PLIK: algorithms/sa.py
+
+OPIS DZIAŁANIA:
+Algorytm symulowanego wyżarzania inspirowany procesem fizycznym stopniowego 
+chłodzenia metalu. Rozpoczyna od wysokiej "temperatury", która pozwala na 
+akceptację gorszych rozwiązań z pewnym prawdopodobieństwem (unikanie lokalnych 
+minimów). W miarę obniżania temperatury algorytm staje się coraz bardziej 
+zachłanny, akceptując głównie rozwiązania poprawiające.
+
+PARAMETRY TESTOWANE:
+1. neighborhood: typ sąsiedztwa ("swap", "insert", "two_opt")
+2. temperature: temperatura początkowa (T₀)
+3. alpha: współczynnik chłodzenia (0 < α < 1)
+4. cooling_method: metoda redukcji temperatury ("geometric", "linear", "logarithmic")
+
+METODY CHŁODZENIA:
+- Geometryczna: T(t+1) = α × T(t)
+- Liniowa: T(t+1) = T(t) - β
+- Logarytmiczna: T(t+1) = T₀ / log(t+2)
+
+KRYTERIUM METROPOLISA (akceptacja gorszego rozwiązania):
+P(accept) = exp(-Δcost / T)
+
+gdzie:
+- Δcost = koszt_nowy - koszt_obecny (> 0 dla gorszych rozwiązań)
+- T = aktualna temperatura
+
+PSEUDOKOD:
+current_route = losowa_permutacja()
+T = temperature
+
+while T > T_min:
+    neighbor = generuj_sąsiada(current_route, neighborhood)
+    Δ = koszt(neighbor) - koszt(current_route)
+    
+    if Δ < 0 or random() < exp(-Δ / T):  # Metropolis
+        current_route = neighbor
+        
+    T = chłodzenie(T, alpha, metoda)
+
+WYNIKI TESTÓW:
+┌──────────────┬──────────────────┬────────────────┐
+│  Instancja   │   Długość trasy  │  Czas [s]      │
+├──────────────┼──────────────────┼────────────────┤
+│ TSP_48       │     8631.08      │    0.03        │
+│ TSP_76       │  2,788,018.74    │    0.05        │
+│ TSP_127      │  6,166,706.72    │    0.07        │
+└──────────────┴──────────────────┴────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2.4. ALGORYTM TS (TABU SEARCH)                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PLIK: algorithms/ts.py
+
+OPIS DZIAŁANIA:
+Algorytm przeszukiwania z listą tabu utrzymuje pamięć ostatnio odwiedzonych 
+rozwiązań lub wykonanych ruchów. Lista tabu (FIFO queue) zapobiega cyklicznemu 
+powracaniu do tych samych rozwiązań, wymuszając eksplorację nowych obszarów 
+przestrzeni rozwiązań. Implementuje również kryterium aspiracji - jeśli ruch 
+z listy tabu prowadzi do najlepszego dotychczas znalezionego rozwiązania, 
+zostaje zaakceptowany mimo statusu tabu.
+
+PARAMETRY TESTOWANE:
+1. neighborhood: typ sąsiedztwa ("swap", "insert", "two_opt")
+2. tabu_size: rozmiar listy tabu (długość pamięci)
+3. iterations: maksymalna liczba iteracji
+4. candidates_per_iteration: liczba generowanych kandydatów w każdej iteracji
+
+MECHANIZM LISTY TABU:
+- Lista przechowuje ostatnie tabu_size ruchów
+- Nowy ruch dodawany na koniec, najstarszy usuwany (FIFO)
+- Ruch może być na liście jako para (i, j) reprezentująca zamianę miast
+
+KRYTERIUM ASPIRACJI:
+if ruch on tabu_list and koszt(ruch) < best_global_cost:
+    akceptuj_mimo_tabu()
+
+PSEUDOKOD:
+current_route = losowa_permutacja()
+tabu_list = pusta_kolejka(max_size=tabu_size)
+
+for iter in 1..iterations:
+    candidates = generuj_kandydatów(current_route, n=candidates_per_iteration)
+    
+    best_candidate = None
+    for candidate in candidates:
+        ruch = wyznacz_ruch(current_route, candidate)
+        
+        if ruch not in tabu_list or aspiracja(candidate):
+            if lepszy_niż(candidate, best_candidate):
+                best_candidate = candidate
+                
+    current_route = best_candidate
+    dodaj_do_tabu(ruch)
+
+WYNIKI TESTÓW:
+┌──────────────┬──────────────────┬────────────────┐
+│  Instancja   │   Długość trasy  │  Czas [s]      │
+├──────────────┼──────────────────┼────────────────┤
+│ TSP_48       │     9998.19      │    0.07        │
+│ TSP_76       │  2,774,950.52    │    0.09        │
+│ TSP_127      │  4,770,350.55    │    0.14        │
+└──────────────┴──────────────────┴────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2.5. ALGORYTM GA (GENETIC ALGORITHM)                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PLIK: algorithms/ga.py
+
+OPIS DZIAŁANIA:
+Algorytm genetyczny inspirowany procesem ewolucji biologicznej. Utrzymuje 
+populację rozwiązań (osobników), które ewoluują poprzez operacje selekcji, 
+krzyżowania i mutacji. W każdej generacji lepiej przystosowane osobniki mają 
+większą szansę przekazania swoich cech do potomstwa (strategia elitarna).
+
+PARAMETRY TESTOWANE:
+1. selection_method: metoda selekcji rodziców
+2. crossover_method: metoda krzyżowania
+3. mutation_method: metoda mutacji
+4. population_size: rozmiar populacji
+5. p_mutation: prawdopodobieństwo mutacji
+
+METODY SELEKCJI (3 wymagane):
+1. TOURNAMENT (Turniejowa):
+   - Losuj k osobników, wybierz najlepszego
+   - Silna presja selekcyjna
+
+2. ROULETTE (Ruletkowa):
+   - Prawdopodobieństwo wyboru proporcjonalne do fitness
+   - P(wybór) = fitness(osobnik) / suma_fitness(populacja)
+   - Słabsza presja selekcyjna
+
+3. RANKING (Rankingowa):
+   - Sortuj populację, przypisz rangi
+   - P(wybór) oparte na pozycji, nie bezpośrednio na fitness
+   - Średnia presja selekcyjna
+
+METODY KRZYŻOWANIA (3 wymagane):
+1. OX (Order Crossover):
+   - Kopiuj segment od rodzica 1
+   - Uzupełnij brakujące miasta w kolejności z rodzica 2
+   
+2. PMX (Partially Mapped Crossover):
+   - Zamień segment, stwórz mapowanie
+   - Napraw duplikaty zgodnie z mapowaniem
+   
+3. CX (Cycle Crossover):
+   - Zidentyfikuj cykle w permutacjach
+   - Naprzemienne kopiowanie cykli od rodziców
+
+METODY MUTACJI:
+1. SWAP: zamiana dwóch losowych miast miejscami
+2. INSERT: przeniesienie miasta w inne miejsce (opcjonalne)
+3. INVERSION: odwrócenie fragmentu trasy (opcjonalne)
+
+STRATEGIA ELITARNA:
+- Najlepsze N% osobników automatycznie przechodzi do następnej generacji
+- Zapobiega utracie najlepszych rozwiązań
+
+PSEUDOKOD:
+population = inicjalizuj_populację(population_size)
+
+for generation in 1..max_generations:
+    # Selekcja rodziców
+    parents = selekcja(population, selection_method)
+    
+    # Krzyżowanie
+    offspring = []
+    for i in range(0, len(parents), 2):
+        child1, child2 = krzyżowanie(parents[i], parents[i+1], crossover_method)
+        offspring.extend([child1, child2])
+    
+    # Mutacja
+    for child in offspring:
+        if random() < p_mutation:
+            mutuj(child, mutation_method)
+    
+    # Elityzm + nowa generacja
+    population = elita(population) + offspring
+
+WYNIKI TESTÓW:
+┌──────────────┬─────────────────────┬──────────────────────┬──────────┐
+│  Instancja   │  Tournament+OX      │   Roulette+PMX       │  Czas    │
+├──────────────┼─────────────────────┼──────────────────────┼──────────┤
+│ TSP_48       │      11,790.92      │      14,695.68       │  0.49 s  │
+│ TSP_76       │   3,500,273.14      │   4,766,060.35       │  0.70 s  │
+│ TSP_127      │  14,744,979.45      │  21,166,098.98       │  1.30 s  │
+└──────────────┴─────────────────────┴──────────────────────┴──────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+3. OPERATORY SĄSIEDZTWA (3 WYMAGANE)
+═══════════════════════════════════════════════════════════════════════════════
+
+PLIK: utils/neighborhoods.py
+
+Zaimplementowano trzy rodzaje operatorów generowania rozwiązań sąsiednich,
+wykorzystywanych przez algorytmy IHC, SA i TS:
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 3.1. SWAP (Zamiana)                                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+OPIS: Losowa zamiana dwóch miast miejscami w trasie.
+
+PRZYKŁAD:
+Przed:  [1, 2, 3, 4, 5]
+        Zamiana pozycji 1 ↔ 3
+Po:     [1, 4, 3, 2, 5]
+
+ZŁOŻONOŚĆ: O(1) - tylko dwie zamiany
+ZASTOSOWANIE: Szybka eksploracja lokalnego sąsiedztwa
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 3.2. INSERT (Wstawienie)                                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+OPIS: Wyjęcie miasta z jednej pozycji i wstawienie w inne miejsce.
+
+PRZYKŁAD:
+Przed:  [1, 2, 3, 4, 5]
+        Wyjmij pozycję 1, wstaw na pozycję 3
+Po:     [1, 3, 4, 2, 5]
+
+ZŁOŻONOŚĆ: O(n) - przesunięcie fragmentu tablicy
+ZASTOSOWANIE: Bardziej destruktywne zmiany niż SWAP
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 3.3. TWO-OPT (Odwrócenie fragmentu)                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+OPIS: Odwrócenie kolejności miast w losowym fragmencie trasy.
+
+PRZYKŁAD:
+Przed:  [1, 2, 3, 4, 5]
+        Odwróć fragment [2:4]
+Po:     [1, 4, 3, 2, 5]
+
+ZŁOŻONOŚĆ: O(k) gdzie k = długość odwracanego fragmentu
+ZASTOSOWANIE: Eliminacja przecięć w trasie, często bardzo skuteczny dla TSP
+
+OPTYMALIZACJA - DELTA EVALUATION:
+Dla algorytmów SA i TS zaimplementowano szybką ocenę przyrostową (delta),
+która oblicza zmianę kosztu bez przeliczania całej trasy:
+
+Δcost = koszt(nowa_trasa) - koszt(stara_trasa)
+
+Obliczane na podstawie tylko zmienionych krawędzi, co znacząco przyspiesza 
+działanie algorytmów.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+4. ANALIZA WYNIKÓW
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 4.1. PORÓWNANIE SKUTECZNOŚCI ALGORYTMÓW                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+RANKING DLA TSP_48 (49 miast):
+┌──────┬─────────────────────┬──────────────────┬─────────────────────┐
+│ Poz. │    Algorytm         │  Długość trasy   │  % vs najlepszy     │
+├──────┼─────────────────────┼──────────────────┼─────────────────────┤
+│  1   │ IHC                 │     8422.85      │     0.0% (BASE)     │
+│  2   │ SA                  │     8631.08      │    +2.5%            │
+│  3   │ NN                  │     8965.17      │    +6.4%            │
+│  4   │ TS                  │     9998.19      │   +18.7%            │
+│  5   │ GA (Tournament+OX)  │    11,790.92     │   +40.0%            │
+│  6   │ GA (Roulette+PMX)   │    14,695.68     │   +74.5%            │
+└──────┴─────────────────────┴──────────────────┴─────────────────────┘
+
+RANKING DLA TSP_76 (77 miast):
+┌──────┬─────────────────────┬──────────────────┬─────────────────────┐
+│ Poz. │    Algorytm         │  Długość trasy   │  % vs najlepszy     │
+├──────┼─────────────────────┼──────────────────┼─────────────────────┤
+│  1   │ IHC                 │  2,528,491.93    │     0.0% (BASE)     │
+│  2   │ NN                  │  2,699,580.70    │    +6.8%            │
+│  3   │ TS                  │  2,774,950.52    │    +9.7%            │
+│  4   │ SA                  │  2,788,018.74    │   +10.3%            │
+│  5   │ GA (Tournament+OX)  │  3,500,273.14    │   +38.4%            │
+│  6   │ GA (Roulette+PMX)   │  4,766,060.35    │   +88.5%            │
+└──────┴─────────────────────┴──────────────────┴─────────────────────┘
+
+RANKING DLA TSP_127 (128 miast):
+┌──────┬─────────────────────┬──────────────────┬─────────────────────┐
+│ Poz. │    Algorytm         │  Długość trasy   │  % vs najlepszy     │
+├──────┼─────────────────────┼──────────────────┼─────────────────────┤
+│  1   │ NN                  │  3,438,520.84    │     0.0% (BASE)     │
+│  2   │ IHC                 │  4,516,277.54    │   +31.3%            │
+│  3   │ TS                  │  4,770,350.55    │   +38.7%            │
+│  4   │ SA                  │  6,166,706.72    │   +79.3%            │
+│  5   │ IHC (alt. config)   │ 11,844,655.13    │  +244.5%            │
+│  6   │ GA (Tournament+OX)  │ 14,744,979.45    │  +328.8%            │
+│  7   │ GA (Roulette+PMX)   │ 21,166,098.98    │  +515.4%            │
+└──────┴─────────────────────┴──────────────────┴─────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 4.2. ANALIZA CZASU WYKONANIA                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PORÓWNANIE CZASÓW [sekundy]:
+┌─────────────────────┬──────────┬──────────┬──────────┐
+│     Algorytm        │  TSP_48  │  TSP_76  │  TSP_127 │
+├─────────────────────┼──────────┼──────────┼──────────┤
+│ NN                  │  0.0002  │  0.0002  │  0.0006  │
+│ IHC                 │  0.03-   │  0.03-   │  0.03-   │
+│                     │  0.34    │  0.35    │  0.41    │
+│ SA                  │  0.03    │  0.05    │  0.07    │
+│ TS                  │  0.07    │  0.09    │  0.14    │
+│ GA (Tournament+OX)  │  0.49    │  0.70    │  1.30    │
+└─────────────────────┴──────────┴──────────┴──────────┘
+
+WNIOSKI CZASOWE:
+- NN najszybszy: O(n²) - deterministyczny, bez iteracji
+- SA, TS, IHC: O(iterations × n) - metaheurystyki jednopunktowe
+- GA najwolniejszy: O(generations × population × n) - populacyjny
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 4.3. SKUTECZNOŚĆ WARIANTÓW ALGORYTMU GENETYCZNEGO                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+TOURNAMENT+OX vs ROULETTE+PMX:
+┌──────────────┬─────────────────┬──────────────────┬──────────────┐
+│  Instancja   │  Tournament+OX  │   Roulette+PMX   │  Różnica %   │
+├──────────────┼─────────────────┼──────────────────┼──────────────┤
+│ TSP_48       │    11,790.92    │    14,695.68     │    +24.6%    │
+│ TSP_76       │ 3,500,273.14    │ 4,766,060.35     │    +36.2%    │
+│ TSP_127      │14,744,979.45    │21,166,098.98     │    +43.5%    │
+└──────────────┴─────────────────┴──────────────────┴──────────────┘
+
+INTERPRETACJA:
+Wariant Tournament+OX konsekwentnie osiąga lepsze wyniki (o 25-43%) niż 
+Roulette+PMX. Przyczyny:
+
+1. PRESJA SELEKCYJNA:
+   - Tournament: silna presja - wybiera zawsze najlepszych z podgrupy
+   - Roulette: słaba presja - gorsze osobniki mają szansę reprodukcji
+
+2. WŁAŚCIWOŚCI KRZYŻOWANIA:
+   - OX (Order Crossover): lepiej zachowuje względne pozycje miast
+   - PMX (Partially Mapped): może niszczyć dobre subsequencje
+
+3. ZBIEŻNOŚĆ:
+   - Tournament szybciej zbiega do dobrych obszarów
+   - Roulette potrzebuje więcej generacji (które są ograniczone)
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 4.4. WPŁYW SKALI PROBLEMU (LICZBY MIAST)                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+STABILNOŚĆ ALGORYTMÓW przy wzroście n:
+
+1. NN - NAJBARDZIEJ STABILNY:
+   - TSP_48: pozycja 3/6
+   - TSP_76: pozycja 2/6
+   - TSP_127: pozycja 1/6 ← WYGRYWA!
+   
+   Zachłanność NN dobrze skaluje się z rozmiarem problemu.
+   Dla dużych instancji deterministyczna konstrukcja trasy jest efektywniejsza
+   niż metaheurystyki startujące z losowych rozwiązań.
+
+2. IHC - SPADEK PRZY DUŻYCH INSTANCJACH:
+   - TSP_48: pozycja 1/6 ← WYGRYWA!
+   - TSP_76: pozycja 1/6 ← WYGRYWA!
+   - TSP_127: pozycje 2 i 5 (zależnie od konfiguracji)
+   
+   Wymaga znacznie większej liczby restartów dla TSP_127, aby znaleźć dobre
+   minimum lokalne. Losowe starty mogą trafić w bardzo złe obszary.
+
+3. GA - NAJGORSZY DLA DUŻYCH INSTANCJI:
+   - Wyniki pogarszają się dramatycznie przy TSP_127 (do +515%)
+   - Populacja 100 osobników to za mało dla przestrzeni 128! permutacji
+   - Wymaga eksponencjalnie więcej generacji dla większych problemów
+
+
+═══════════════════════════════════════════════════════════════════════════════
+5. WNIOSKI I OBSERWACJE
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 5.1. WNIOSKI OGÓLNE                                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. BRAK UNIWERSALNEGO ZWYCIĘZCY:
+   Żaden algorytm nie wygrał we wszystkich instancjach. IHC dominował dla 
+   małych/średnich problemów, ale NN okazał się najlepszy dla dużej instancji.
+
+2. KOMPROMIS JAKOŚĆ vs CZAS:
+   - NN: bardzo szybki (0.0002-0.0006s), umiarkowana jakość (6-79% od najlepszego)
+   - IHC/SA/TS: średni czas (0.03-0.4s), dobra jakość (0-40% od najlepszego)
+   - GA: wolny (0.5-1.3s), słaba jakość (40-515% od najlepszego)
+
+3. ZNACZENIE PARAMETRÓW:
+   Wyniki IHC dla TSP_127 pokazują ogromny rozrzut (4.5M vs 11.8M) w zależności
+   od konfiguracji parametrów. Świadczy to o krytycznym znaczeniu doboru:
+   - liczby restartów
+   - liczby iteracji
+   - typu sąsiedztwa
+   - kryterium stopu
+
+4. SELEKCJA I KRZYŻOWANIE W GA:
+   Tournament+OX przewyższa Roulette+PMX o 25-43%, co potwierdza znaczenie
+   silnej presji selekcyjnej i zachowania porządku w krzyżowaniu dla TSP.
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 5.2. REKOMENDACJE PRAKTYCZNE                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+DLA MAŁYCH INSTANCJI (n < 100):
+→ Użyj IHC z sąsiedztwem two-opt, wysoką liczbą restartów (20+)
+→ Alternatywnie SA z wysoką temperaturą początkową i wolnym chłodzeniem (α=0.99)
+
+DLA DUŻYCH INSTANCJI (n > 100):
+→ NN jako szybkie rozwiązanie bazowe
+→ Następnie IHC/SA z NN jako punktem startowym (zamiast losowej trasy)
+
+DLA APLIKACJI CZASU RZECZYWISTEGO:
+→ NN (mikrosekunda) - jedyna realistyczna opcja
+→ Rozważ NN z best_of_k=10 dla niewielkiej poprawy jakości
+
+DLA NAJWYŻSZEJ JAKOŚCI (bez limitu czasu):
+→ IHC z bardzo dużą liczbą restartów (100+) i wszystkimi sąsiedztwami
+→ SA z bardzo wolnym chłodzeniem (α=0.995-0.999)
+
+NIE ZALECANE:
+→ GA w obecnej konfiguracji - słabe wyniki przy długim czasie obliczeń
+→ Wymaga znacznie większej populacji (500+) i liczby generacji (1000+)
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 5.3. WYBÓR PARAMETRU "MIASTO STARTOWE" W NN                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+UZASADNIENIE min(5, tsp.n):
+
+ZALETY:
+✓ Powtarzalność wyników (stałe miasta 0,1,2,3,4)
+✓ Nie przeciąża obliczeń dla dużych instancji
+✓ Wystarczająca różnorodność dla małych instancji
+✓ Umożliwia rzetelne porównanie z innymi algorytmami
+
+ODRZUCONE ALTERNATYWY:
+✗ range(tsp.n) - dla TSP_127 wymagałoby 128 uruchomień (niepraktyczne)
+✗ random.sample() - różne wyniki przy każdym uruchomieniu (brak powtarzalności)
+
+EKSPERYMENT:
+Testowano wpływ miasta startowego na wynik:
+- TSP_48: rozrzut 8965-10466 (16.7% różnicy)
+- TSP_76: rozrzut 2.60M-2.89M (11.2% różnicy)  
+- TSP_127: rozrzut 2.99M-3.44M (15.1% różnicy)
+
+WNIOSEK:
+Wybór miasta startowego ma istotny wpływ (10-17%), ale testowanie wszystkich
+n miast jest zbędne - 5 losowych próbek daje dobry kompromis jakość/czas.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+6. NASTĘPNE KROKI (DO UZUPEŁNIENIA)
+═══════════════════════════════════════════════════════════════════════════════
+
+□ EXCEL SOLVER - punkt odniesienia (optimum)
+  - Uruchomić Solver dla każdej instancji 5 razy
+  - Zapisać wartości min i średnią
+  - Porównać % skuteczności heurystyk względem optimum
+
+□ SZABLON EXCEL - najlepsze wyniki
+  - Wypełnić plik "Zestawienie najlepszych wyników TSP"
+  - Wpisać wartości i uszeregowania dla każdego algorytmu
+  - Dodać wyniki usprawnieńf (jeśli zostaną zaimplementowane)
+
+□ USPRAWNIENIA (2 wymagane, 1 autorskie)
+  - Propozycja 1: Intensifikacja dla IHC (gdy znajdzie dobre rozwiązanie)
+  - Propozycja 2: Dywersyfikacja dla TS (restart gdy ugrzęźnie)
+  - [Autorskie]: [do przemyślenia i opisania]
+
+□ 6-TY ALGORYTM (jeśli wymagany)
+  - Propozycja: ACO (Ant Colony Optimization)
+  - Lub inny ciekawy algorytm (Particle Swarm, Bee Colony, etc.)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+7. PODSUMOWANIE
+═══════════════════════════════════════════════════════════════════════════════
+
+Projekt zrealizował kompleksową implementację i analizę porównawczą pięciu 
+klasycznych algorytmów optymalizacji dla problemu komiwojażera. Testy na trzech
+instancjach o różnej skali (49, 77, 128 miast) wykazały, że:
+
+• IHC i SA są najbardziej efektywne dla małych/średnich instancji
+• NN okazał się zaskakująco skuteczny dla dużej instancji (TSP_127)
+• GA wymaga znacznie większych zasobów obliczeniowych dla porównywalnej jakości
+• Wybór parametrów (zwłaszcza w IHC) ma krytyczne znaczenie dla wyników
+• Tournament+OX przewyższa Roulette+PMX o 25-43% w algorytmie genetycznym
+
+Dalsze badania powinny skupić się na:
+- Porównaniu z rozwiązaniem optymalnym (Excel Solver)
+- Implementacji i ewaluacji usprawnień algorytmów
+- Testowaniu większej liczby kombinacji parametrów
+- Hybrydyzacji algorytmów (np. GA z lokalnym przeszukiwaniem)
+
+═══════════════════════════════════════════════════════════════════════════════
+KONIEC DOKUMENTACJI
+═══════════════════════════════════════════════════════════════════════════════

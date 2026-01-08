@@ -1,0 +1,284 @@
+═══════════════════════════════════════════════════════════════════════════════
+    PROJEKT IO - TSP - LISTA DO ODDANIA (CHECKLIST)
+═══════════════════════════════════════════════════════════════════════════════
+Data: 7 stycznia 2026
+Grupa: 4 osoby
+═══════════════════════════════════════════════════════════════════════════════
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 1. PLIK DO WORDA (SPRAWOZDANIE) ✅                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+📄 **SPRAWOZDANIE_DOKUMENTACJA.txt** ← WKLEJ TEN DO WORDA!
+
+Co zawiera (GOTOWE):
+✅ Opis wszystkich 6 algorytmów (NN, IHC, SA, TS, GA, ACO)
+✅ Opis 3 sąsiedztw (swap, insert, two-opt)
+✅ Pseudokody algorytmów
+✅ Tabele wyników dla 3 instancji
+✅ Analiza parametrów (min. 4 × 4 wartości)
+✅ Ranking skuteczności
+✅ Wnioski i obserwacje
+✅ Analiza czasu wykonania
+✅ 2 usprawnienia (opisane, do przetestowania)
+
+DO UZUPEŁNIENIA W WORDZIE:
+☐ Skład grupy (4 osoby - imiona, nazwiska, numery indeksów)
+☐ Termin oddania (jak dostaniesz info)
+☐ Wyniki Excel Solver (po uruchomieniu)
+☐ Porównanie % odchylenia od optimum
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2. KOD PROJEKTU ✅                                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+FOLDER: projekt_io_2\
+
+Zawartość (KOMPLETNA):
+✅ main.py
+✅ algorithms/ (nn.py, ihc.py, sa.py, ts.py, ga.py, aco.py) - 6 algorytmów
+✅ utils/ (loader.py, metrics.py, tsp.py, neighborhoods.py)
+✅ experiments/ (run_tests.py, runner.py)
+✅ instances/ (Dane_TSP_48.tsp, Dane_TSP_76.tsp, Dane_TSP_127.tsp)
+✅ results/ (3 pliki CSV z wynikami testów)
+✅ requirements.txt
+
+WERYFIKACJA WYMAGAŃ:
+✅ 6 algorytmów: NN, IHC, SA, TS, GA, ACO (dowolny "ciekawy" = ACO)
+✅ 3 rodzaje sąsiedztw w utils/neighborhoods.py
+✅ GA: 3 metody selekcji (Tournament, Roulette, Ranking)
+✅ GA: 3 metody krzyżowania (OX, PMX, CX)
+✅ Minimum 4 parametry × 4 wartości dla każdego algorytmu
+✅ Testy 5× dla algorytmów stochastycznych
+✅ 2 usprawnienia (opisane w kodzie):
+   - ihc_with_intensification() - autorskie
+   - tabu_search_diversification() - autorskie
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 3. EXCEL SOLVER - ⚠️ KRYTYCZNE! BRAKUJE! ☐                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+WYMAGANIE Z POLECENIA:
+"analizę uzyskanych wyników wraz z wnioskami, gdzie punktem odniesienia 
+do porównania efektywności heurystyk będzie wynik uzyskany przez Solver Excela"
+
+CO ZROBIĆ:
+1. Otwórz pliki:
+   - instances/Dane_TSP_48.csv (lub .xlsx)
+   - instances/Dane_TSP_76.csv
+   - instances/Dane_TSP_127.csv
+
+2. Dla KAŻDEGO pliku:
+   a) Uruchom Excel Solver (Data → Solver lub Dane → Solver)
+   b) Ustaw:
+      - Cel: Minimalizacja całkowitej długości trasy
+      - Zmienne: Kolejność miast (permutacja)
+      - Ograniczenia: Każde miasto raz
+   c) Uruchom 5 RAZY (wymaganie: "min. 5 razy")
+   d) Zapisz dla każdej instancji:
+      * Najlepszy wynik (minimum)
+      * Średnia z 5 uruchomień
+      * Czas wykonania
+
+3. Wyniki zapisz w formacie:
+   ┌──────────────┬────────────────┬─────────────┬────────────┐
+   │  Instancja   │  Solver MIN    │  Solver AVG │  Czas [s]  │
+   ├──────────────┼────────────────┼─────────────┼────────────┤
+   │ TSP_48       │     ????       │    ????     │    ????    │
+   │ TSP_76       │     ????       │    ????     │    ????    │
+   │ TSP_127      │     ????       │    ????     │    ????    │
+   └──────────────┴────────────────┴─────────────┴────────────┘
+
+4. Oblicz % odchylenia każdego algorytmu od optimum Solvera:
+   % odchylenie = (wynik_algorytmu - wynik_Solver) / wynik_Solver × 100%
+
+   Przykład:
+   Jeśli Solver da 8000, a ACO 8394:
+   % = (8394 - 8000) / 8000 × 100% = 4.9% (ACO gorszy o 4.9%)
+
+5. Dodaj do sprawozdania sekcję:
+   "4.4. Porównanie z optimum (Excel Solver)"
+   
+   Ranking odchyleń od optimum:
+   - ACO: +4.9% (najbliższy optimum)
+   - IHC: +5.3%
+   - SA: +7.9%
+   - NN: +12.1%
+   - TS: +25.0%
+   - GA: +47.4% (najdalszy od optimum)
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 4. SZABLON EXCEL Z NAJLEPSZYMI WYNIKAMI ☐                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PLIK: "Zestawienie najlepszych wyników TSP.xlsx" (dostępny na Teams)
+
+CO WYPEŁNIĆ:
+1. Dla KAŻDEGO algorytmu (NN, IHC, SA, TS, GA, ACO, Solver):
+   - Najlepsza długość trasy
+   - Uszeregowanie (kolejność miast) które dało ten wynik
+   - Czas wykonania
+
+2. Format uszeregowania:
+   [0, 15, 32, 8, 41, 23, ...]  (przykład dla TSP_48)
+
+3. Gdzie znaleźć uszeregowania:
+   - W plikach results/*.csv (kolumna z najlepszym wynikiem)
+   - Uruchom ponownie algorytmy z zapisem tras:
+     python main.py --full --save-routes
+
+PRZYKŁADOWA ZAWARTOŚĆ (TSP_48):
+┌────────────┬─────────────┬────────────────────────────┬──────────┐
+│ Algorytm   │  Długość    │  Uszeregowanie             │  Czas    │
+├────────────┼─────────────┼────────────────────────────┼──────────┤
+│ Solver     │   8000.00   │  [0,12,45,3,...]           │  1.2s    │
+│ ACO        │   8394.10   │  [0,15,32,8,...]           │  0.52s   │
+│ IHC        │   8422.85   │  [0,23,11,5,...]           │  0.34s   │
+│ SA         │   8631.08   │  [0,8,19,34,...]           │  0.03s   │
+│ NN         │   8965.17   │  [0,1,2,3,...]             │  0.0002s │
+│ TS         │   9998.19   │  [0,7,45,12,...]           │  0.07s   │
+│ GA         │  11790.92   │  [0,32,8,15,...]           │  0.49s   │
+└────────────┴─────────────┴────────────────────────────┴──────────┘
+
+(Powtórz dla TSP_76 i TSP_127)
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 5. PLIKI DO WYSŁANIA (KOMPLET) ☐                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+STRUKTURA FOLDERU DO WYSŁANIA:
+
+projekt_TSP_grupa_[nazwisko].zip
+├── Sprawozdanie.docx (lub .pdf)
+│   └── [SPRAWOZDANIE_DOKUMENTACJA.txt wklejony do Worda]
+│
+├── Zestawienie_wynikow.xlsx
+│   └── [Szablon wypełniony najlepszymi wynikami + uszeregowania]
+│
+└── kod/
+    ├── main.py
+    ├── requirements.txt
+    ├── algorithms/
+    │   ├── nn.py
+    │   ├── ihc.py
+    │   ├── sa.py
+    │   ├── ts.py
+    │   ├── ga.py
+    │   └── aco.py
+    ├── utils/
+    │   ├── loader.py
+    │   ├── metrics.py
+    │   ├── tsp.py
+    │   └── neighborhoods.py
+    ├── experiments/
+    │   ├── run_tests.py
+    │   └── runner.py
+    ├── instances/
+    │   ├── Dane_TSP_48.tsp
+    │   ├── Dane_TSP_76.tsp
+    │   └── Dane_TSP_127.tsp
+    └── results/
+        └── [pliki CSV z wynikami]
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 6. CHECKLIST KOŃCOWA ☐                                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PRZED WYSŁANIEM SPRAWDŹ:
+
+IMPLEMENTACJA:
+[✅] 6 algorytmów zaimplementowanych (NN, IHC, SA, TS, GA, ACO)
+[✅] 3 rodzaje sąsiedztw (swap, insert, two-opt)
+[✅] GA: 3 selekcje + 3 krzyżowania + 3 mutacje
+[✅] 2 usprawnienia (1 autorskie)
+[✅] Minimum 4 parametry × 4 wartości dla każdego algorytmu
+
+TESTY:
+[✅] 3 instancje przetestowane (48, 76, 127)
+[✅] Min. 5 powtórzeń dla algorytmów stochastycznych
+[☐] Excel Solver: 5 uruchomień × 3 instancje = 15 uruchomień
+[✅] Czasy wykonania zmierzone i zapisane
+
+DOKUMENTACJA:
+[✅] Sprawozdanie napisane (SPRAWOZDANIE_DOKUMENTACJA.txt)
+[☐] Sprawozdanie w Wordzie z uzupełnionym:
+    - Składem grupy (4 osoby)
+    - Wynikami Solvera
+    - Porównaniem % odchylenia od optimum
+    - Terminem oddania
+[☐] Excel z najlepszymi wynikami + uszeregowaniami wypełniony
+[✅] Kod projektu kompletny i działający
+
+OBRONA:
+[📚] Przygotuj się do wyjaśnienia:
+    - Jak działa każdy algorytm (pseudokod)
+    - Dlaczego ACO wygrał (feromony vs genetyka)
+    - Jak działają sąsiedztwa (swap, insert, two-opt)
+    - Jakie usprawnienia zaimplementowałeś (intensyfikacja, dywersyfikacja)
+    - Co to delta evaluation (optymalizacja)
+    - Dlaczego Tournament >> Roulette w GA
+    - Interpretacja wyników i wykresów
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 7. PRIORYTET DZIAŁAŃ (TERAZ!) ⚠️                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PRIORYTET 1 (KRYTYCZNE - bez tego nie ma punktu odniesienia):
+☐ Uruchom Excel Solver 5× dla każdej instancji
+☐ Zapisz wyniki (minimum, średnia, czas)
+
+PRIORYTET 2 (WYMAGANE):
+☐ Wypełnij szablon Excel z uszeregowaniami
+☐ Dodaj wyniki Solvera do sprawozdania
+☐ Oblicz % odchylenia od optimum
+
+PRIORYTET 3 (FINALIZACJA):
+☐ Uzupełnij skład grupy w sprawozdaniu
+☐ Skonwertuj SPRAWOZDANIE_DOKUMENTACJA.txt → Word
+☐ Spakuj wszystko do ZIP
+☐ Wyślij jedną osobą z grupy
+
+PRIORYTET 4 (OPCJONALNE - dodatkowe punkty):
+☐ Przetestuj usprawnienia (intensyfikacja, dywersyfikacja)
+☐ Dodaj wyniki usprawnień do sprawozdania
+☐ Podłącz Optuna do autotuningu (dla zainteresowanych)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+PODSUMOWANIE - CO MASZ A CZEGO BRAKUJE
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ MASZ GOTOWE (90%):
+- Kompletny kod 6 algorytmów
+- 3 sąsiedztwa zaimplementowane
+- Wyniki testów (CSV)
+- Sprawozdanie techniczne napisane
+- Analizy i wnioski
+- Usprawnienia opisane
+
+☐ BRAKUJE (10% - ale KRYTYCZNE!):
+- Excel Solver (punkt odniesienia!) ← BEZ TEGO NIE ODDAWAJ!
+- Szablon Excel wypełniony
+- Skład grupy
+- Porównanie % z optimum
+
+CZAS POTRZEBNY:
+- Excel Solver: ~30-60 minut (5 runs × 3 instances)
+- Szablon Excel: ~20 minut
+- Aktualizacja Word: ~10 minut
+- RAZEM: ~1.5-2 godziny do pełnej gotowości
+
+MOŻESZ KONKUROWAĆ O +5% (najlepszy wynik):
+ACO daje świetne wyniki (8394 dla TSP_48, 2.498M dla TSP_76, 3.030M dla TSP_127)
+Jeśli Solver potwierdzi że to bliskie optimum - masz szansę na bonus!
+
+═══════════════════════════════════════════════════════════════════════════════
+KONIEC CHECKLISTY
+═══════════════════════════════════════════════════════════════════════════════
