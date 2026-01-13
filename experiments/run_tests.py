@@ -126,7 +126,7 @@ def test_nn(tsp, n_runs=5):
     return results
 
 
-def test_ihc(tsp, n_runs=5):
+def test_ihc(tsp, n_runs=5, use_nn_start=False):
     """
     Testuje algorytm IHC z różnymi parametrami.
     
@@ -149,7 +149,7 @@ def test_ihc(tsp, n_runs=5):
     # Parametr 1: Test sąsiedztw
     for neigh in neighborhoods:
         stats = run_multiple_times(
-            lambda n=neigh: iterative_hill_climbing(tsp, iterations=1000, restarts=10, neighborhood=n),
+            lambda n=neigh: iterative_hill_climbing(tsp, iterations=1000, restarts=10, neighborhood=n, use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -166,7 +166,7 @@ def test_ihc(tsp, n_runs=5):
     # Parametr 2: Test liczby iteracji
     for iters in iterations_list:
         stats = run_multiple_times(
-            lambda i=iters: iterative_hill_climbing(tsp, iterations=i, restarts=10, neighborhood="two_opt"),
+            lambda i=iters: iterative_hill_climbing(tsp, iterations=i, restarts=10, neighborhood="two_opt", use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -183,7 +183,7 @@ def test_ihc(tsp, n_runs=5):
     # Parametr 3: Test liczby restartów
     for restarts in restarts_list:
         stats = run_multiple_times(
-            lambda r=restarts: iterative_hill_climbing(tsp, iterations=1000, restarts=r, neighborhood="two_opt"),
+            lambda r=restarts: iterative_hill_climbing(tsp, iterations=1000, restarts=r, neighborhood="two_opt", use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -201,7 +201,7 @@ def test_ihc(tsp, n_runs=5):
     for no_imp in no_improve_limits:
         stats = run_multiple_times(
             lambda ni=no_imp: iterative_hill_climbing(tsp, iterations=2000, restarts=10, 
-                                                      neighborhood="two_opt", no_improve_limit=ni),
+                                                      neighborhood="two_opt", no_improve_limit=ni, use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -216,6 +216,7 @@ def test_ihc(tsp, n_runs=5):
         print(f"    no_improve_limit={no_imp} | min={stats['min']:.2f} | mean={stats['mean']:.2f}")
     
     # Test usprawnienia: IHC z intensyfikacją
+    # Uwaga: ihc_with_intensification może wymagać dodania use_nn_start jeśli chcemy
     stats = run_multiple_times(
         lambda: ihc_with_intensification(tsp, iterations=1000, restarts=10),
         n_runs
@@ -234,7 +235,7 @@ def test_ihc(tsp, n_runs=5):
     return results
 
 
-def test_sa(tsp, n_runs=5):
+def test_sa(tsp, n_runs=5, use_nn_start=False):
     """
     Testuje algorytm SA z różnymi parametrami.
     """
@@ -251,7 +252,7 @@ def test_sa(tsp, n_runs=5):
     # Test sąsiedztw
     for neigh in neighborhoods:
         stats = run_multiple_times(
-            lambda n=neigh: simulated_annealing(tsp, temp=1000, alpha=0.99, iterations=5000, neighborhood=n),
+            lambda n=neigh: simulated_annealing(tsp, temp=1000, alpha=0.99, iterations=5000, neighborhood=n, use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -268,7 +269,7 @@ def test_sa(tsp, n_runs=5):
     # Test temperatury początkowej
     for temp in temps:
         stats = run_multiple_times(
-            lambda t=temp: simulated_annealing(tsp, temp=t, alpha=0.99, iterations=5000, neighborhood="two_opt"),
+            lambda t=temp: simulated_annealing(tsp, temp=t, alpha=0.99, iterations=5000, neighborhood="two_opt", use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -285,7 +286,7 @@ def test_sa(tsp, n_runs=5):
     # Test współczynnika chłodzenia
     for alpha in alphas:
         stats = run_multiple_times(
-            lambda a=alpha: simulated_annealing(tsp, temp=1000, alpha=a, iterations=5000, neighborhood="two_opt"),
+            lambda a=alpha: simulated_annealing(tsp, temp=1000, alpha=a, iterations=5000, neighborhood="two_opt", use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -303,7 +304,7 @@ def test_sa(tsp, n_runs=5):
     for method in cooling_methods:
         stats = run_multiple_times(
             lambda m=method: simulated_annealing(tsp, temp=1000, alpha=0.99, iterations=5000, 
-                                                  neighborhood="two_opt", cooling_method=m),
+                                                  neighborhood="two_opt", cooling_method=m, use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -336,7 +337,7 @@ def test_sa(tsp, n_runs=5):
     return results
 
 
-def test_ts(tsp, n_runs=5):
+def test_ts(tsp, n_runs=5, use_nn_start=False):
     """
     Testuje algorytm TS z różnymi parametrami.
     
@@ -359,7 +360,7 @@ def test_ts(tsp, n_runs=5):
     # Parametr 1: Test sąsiedztw
     for neigh in neighborhoods:
         stats = run_multiple_times(
-            lambda n=neigh: tabu_search(tsp, iterations=500, tabu_size=20, neighborhood=n),
+            lambda n=neigh: tabu_search(tsp, iterations=500, tabu_size=20, neighborhood=n, use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -376,7 +377,7 @@ def test_ts(tsp, n_runs=5):
     # Parametr 2: Test długości listy tabu
     for tabu_size in tabu_sizes:
         stats = run_multiple_times(
-            lambda ts=tabu_size: tabu_search(tsp, iterations=500, tabu_size=ts, neighborhood="two_opt"),
+            lambda ts=tabu_size: tabu_search(tsp, iterations=500, tabu_size=ts, neighborhood="two_opt", use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -393,7 +394,7 @@ def test_ts(tsp, n_runs=5):
     # Parametr 3: Test liczby iteracji
     for iters in iterations_list:
         stats = run_multiple_times(
-            lambda i=iters: tabu_search(tsp, iterations=i, tabu_size=20, neighborhood="two_opt"),
+            lambda i=iters: tabu_search(tsp, iterations=i, tabu_size=20, neighborhood="two_opt", use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -411,7 +412,7 @@ def test_ts(tsp, n_runs=5):
     for cand in candidates_list:
         stats = run_multiple_times(
             lambda c=cand: tabu_search(tsp, iterations=500, tabu_size=20, neighborhood="two_opt", 
-                                       candidates_per_iter=c),
+                                       candidates_per_iter=c, use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -444,7 +445,7 @@ def test_ts(tsp, n_runs=5):
     return results
 
 
-def test_ga(tsp, n_runs=5):
+def test_ga(tsp, n_runs=5, use_nn_start=False):
     """
     Testuje algorytm GA z różnymi parametrami.
     """
@@ -463,7 +464,7 @@ def test_ga(tsp, n_runs=5):
     for sel in selection_types:
         stats = run_multiple_times(
             lambda s=sel: genetic_algorithm(tsp, pop_size=100, generations=100, 
-                                            selection_type=s, crossover_type="ox"),
+                                            selection_type=s, crossover_type="ox", use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -481,7 +482,7 @@ def test_ga(tsp, n_runs=5):
     for cross in crossover_types:
         stats = run_multiple_times(
             lambda c=cross: genetic_algorithm(tsp, pop_size=100, generations=100,
-                                              selection_type="tournament", crossover_type=c),
+                                              selection_type="tournament", crossover_type=c, use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -500,7 +501,7 @@ def test_ga(tsp, n_runs=5):
         stats = run_multiple_times(
             lambda m=mut: genetic_algorithm(tsp, pop_size=100, generations=100,
                                             selection_type="tournament", crossover_type="ox",
-                                            mutation_type=m),
+                                            mutation_type=m, use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -518,7 +519,7 @@ def test_ga(tsp, n_runs=5):
     for pop in pop_sizes:
         stats = run_multiple_times(
             lambda p=pop: genetic_algorithm(tsp, pop_size=p, generations=100,
-                                            selection_type="tournament", crossover_type="ox"),
+                                            selection_type="tournament", crossover_type="ox", use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -537,7 +538,7 @@ def test_ga(tsp, n_runs=5):
         stats = run_multiple_times(
             lambda pm=p_mut: genetic_algorithm(tsp, pop_size=100, generations=100,
                                                selection_type="tournament", crossover_type="ox",
-                                               p_mut=pm),
+                                               p_mut=pm, use_nn_start=use_nn_start),
             n_runs
         )
         results.append({
@@ -553,7 +554,7 @@ def test_ga(tsp, n_runs=5):
     
     # Test usprawnienia: GA z adaptacyjną mutacją
     stats = run_multiple_times(
-        lambda: ga_adaptive_mutation(tsp, pop_size=100, generations=100),
+        lambda: ga_adaptive_mutation(tsp, pop_size=100, generations=100, use_nn_start=use_nn_start),
         n_runs
     )
     results.append({
@@ -671,7 +672,7 @@ def test_aco(tsp, n_runs=5):
     return results
 
 
-def run_all_tests(tsp, instance_name, n_runs=5, output_dir="results"):
+def run_all_tests(tsp, instance_name, n_runs=5, output_dir="results", use_nn_start=False):
     """
     Uruchamia wszystkie testy dla danej instancji.
     """
@@ -679,6 +680,7 @@ def run_all_tests(tsp, instance_name, n_runs=5, output_dir="results"):
     print(f"TESTOWANIE INSTANCJI: {instance_name}")
     print(f"Liczba miast: {tsp.n}")
     print(f"Liczba powtórzeń: {n_runs}")
+    print(f"Start z NN: {use_nn_start}")
     print(f"{'='*60}")
     
     all_results = []
@@ -688,16 +690,16 @@ def run_all_tests(tsp, instance_name, n_runs=5, output_dir="results"):
     all_results.extend(test_nn(tsp, n_runs=1))  # NN deterministyczny
     
     print("\n[2/6] Algorytm IHC (Iterative Hill Climbing)")
-    all_results.extend(test_ihc(tsp, n_runs))
+    all_results.extend(test_ihc(tsp, n_runs, use_nn_start=use_nn_start))
     
     print("\n[3/6] Algorytm SA (Simulated Annealing)")
-    all_results.extend(test_sa(tsp, n_runs))
+    all_results.extend(test_sa(tsp, n_runs, use_nn_start=use_nn_start))
     
     print("\n[4/6] Algorytm TS (Tabu Search)")
-    all_results.extend(test_ts(tsp, n_runs))
+    all_results.extend(test_ts(tsp, n_runs, use_nn_start=use_nn_start))
     
     print("\n[5/6] Algorytm GA (Genetic Algorithm)")
-    all_results.extend(test_ga(tsp, n_runs))
+    all_results.extend(test_ga(tsp, n_runs, use_nn_start=use_nn_start))
     
     print("\n[6/6] Algorytm ACO (Ant Colony Optimization)")
     all_results.extend(test_aco(tsp, n_runs))
@@ -708,10 +710,14 @@ def run_all_tests(tsp, instance_name, n_runs=5, output_dir="results"):
     csv_path = os.path.join(output_dir, f"results_{instance_name}_{timestamp}.csv")
     
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=['algorithm', 'params', 'min', 'mean', 'std', 'time'])
+        writer = csv.DictWriter(f, fieldnames=['algorithm', 'params', 'min', 'mean', 'std', 'time', 'route'])
         writer.writeheader()
         for r in all_results:
-            writer.writerow({k: v for k, v in r.items() if k != 'route'})
+            # Dodajemy trasę do wiersza (jako ciąg liczb po przecinku)
+            row = {k: v for k, v in r.items()}
+            if 'route' in row and row['route'] is not None:
+                row['route'] = str(list(row['route']))
+            writer.writerow(row)
     
     print(f"\nWyniki zapisane do: {csv_path}")
     

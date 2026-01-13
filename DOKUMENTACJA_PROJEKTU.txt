@@ -523,6 +523,28 @@ STABILNOŚĆ ALGORYTMÓW przy wzroście n:
    - Populacja 100 osobników to za mało dla przestrzeni 128! permutacji
    - Wymaga eksponencjalnie więcej generacji dla większych problemów
 
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 4.5. WPŁYW HYBRYDYZACJI (FUNDAMENTU NN)                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+REWOLUCJA HYBRYDOWA (flaga --use-nn):
+Zastosowanie NN jako punktu startowego dla metaheurystyk całkowicie
+zmieniło charakterystykę zbieżności algorytmów:
+
+1. GA - PRZEŁOM WYDAJNOŚCIOWY:
+   - TSP_48: Skok na 1. miejsce (8310.07)
+   - TSP_127: Poprawa o 78% (z 14.7 mln na 3.1 mln)
+   - Seeding pozwolił GA skupić się na optymalizacji zamiast na nauce chodzenia.
+
+2. IHC / SA - NOWE REKORDY:
+   - TSP_76: SA osiągnęło 2.48 mln (detronizacja ACO)
+   - TSP_127: IHC osiągnęło 2.97 mln (najlepszy wynik w projekcie)
+
+3. WNIOSEK:
+   Hybrydyzacja (NN + Metaheurystyka) jest najskuteczniejszą strategią.
+   Eliminuje ona problem błądzenia w obszarach o niskiej jakości i pozwala
+   algorytmom na precyzyjne "doszlifowanie" bardzo dobrej bazy zachłannej.
+
 
 ═══════════════════════════════════════════════════════════════════════════════
 5. WNIOSKI I OBSERWACJE

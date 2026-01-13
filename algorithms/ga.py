@@ -34,7 +34,7 @@ def genetic_algorithm(
     mutation_type="swap",
     tournament_size=3,
     elitism=2,
-    use_nn_seed=False
+    use_nn_start=False
 ):
     """
     Algorytm Genetyczny (GA)
@@ -50,7 +50,7 @@ def genetic_algorithm(
         mutation_type: typ mutacji ("swap", "insert", "inversion")
         tournament_size: rozmiar turnieju
         elitism: liczba elitarnych osobników
-        use_nn_seed: czy zaszczepić populację rozwiązaniem NN (USPRAWNIENIE)
+        use_nn_start: czy zaszczepić populację rozwiązaniem NN (USPRAWNIENIE)
     
     Returns:
         (best_route, best_dist)
@@ -61,7 +61,7 @@ def genetic_algorithm(
     population = []
     
     # USPRAWNIENIE: Zaszczep populację rozwiązaniem NN
-    if use_nn_seed:
+    if use_nn_start:
         from algorithms.nn import nearest_neighbor
         for start in range(min(5, n)):
             nn_route, _ = nearest_neighbor(tsp, start=start)
@@ -148,7 +148,8 @@ def ga_adaptive_mutation(
     generations=200,
     initial_p_mut=0.1,
     selection_type="tournament",
-    crossover_type="ox"
+    crossover_type="ox",
+    use_nn_start=False
 ):
     """
     USPRAWNIENIE AUTORSKIE: GA z adaptacyjnym prawdopodobieństwem mutacji
@@ -163,7 +164,17 @@ def ga_adaptive_mutation(
     """
     n = tsp.n
     
-    population = [random.sample(range(n), n) for _ in range(pop_size)]
+    population = []
+    if use_nn_start:
+        from algorithms.nn import nearest_neighbor
+        for start in range(min(5, n)):
+            nn_route, _ = nearest_neighbor(tsp, start=start)
+            population.append(list(nn_route))
+            
+    while len(population) < pop_size:
+        individual = list(range(n))
+        random.shuffle(individual)
+        population.append(individual)
     
     best_route = None
     best_dist = float('inf')

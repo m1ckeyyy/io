@@ -18,16 +18,22 @@ class TSP:
         dist_matrix: macierz odległości n x n
     """
     
-    def __init__(self, coords):
+    def __init__(self, data):
         """
         Inicjalizacja instancji TSP.
         
         Args:
-            coords: lista krotek (x, y) - współrzędne miast
+            data: macierz odległości NxN LUB lista współrzędnych
         """
-        self.coords = coords  # Współrzędne miast
-        self.n = len(coords)  # Liczba miast
-        self.dist_matrix = self._compute_dist_matrix()  # Macierz odległości
+        # Sprawdzamy czy to macierz (lista list) czy lista krotek
+        if data and isinstance(data[0], list):
+            self.dist_matrix = data
+            self.n = len(data)
+            self.coords = None  # Brak współrzędnych, mamy gotową macierz
+        else:
+            self.coords = data
+            self.n = len(data)
+            self.dist_matrix = self._compute_dist_matrix()
 
     def _compute_dist_matrix(self):
         """

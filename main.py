@@ -117,7 +117,7 @@ def quick_test(problem, label):
     return results
 
 
-def run_instance(label, path, full_test=False, n_runs=5):
+def run_instance(label, path, full_test=False, n_runs=5, use_nn_start=False, output_dir="results"):
     """
     Uruchamia testy dla danej instancji.
     """
@@ -126,12 +126,12 @@ def run_instance(label, path, full_test=False, n_runs=5):
         return None
     
     try:
-        coords = loader.load_tsp_file(path)
-        problem = tsp.TSP(coords)
+        data = loader.load_tsp_file(path)
+        problem = tsp.TSP(data)
         
         if full_test:
             from experiments.run_tests import run_all_tests
-            return run_all_tests(problem, label, n_runs=n_runs)
+            return run_all_tests(problem, label, n_runs=n_runs, use_nn_start=use_nn_start, output_dir=output_dir)
         else:
             return quick_test(problem, label)
     
@@ -152,18 +152,24 @@ def main():
     
     # Sprawdź argumenty
     full_test = "--full" in sys.argv
+    use_nn_start = "--use-nn" in sys.argv
     n_runs = 5
+    output_dir = "results"
     
-    # Możliwość zmiany liczby powtórzeń
+    # Możliwość zmiany parametrów z CLI
     for arg in sys.argv:
         if arg.startswith("--runs="):
             try:
                 n_runs = int(arg.split("=")[1])
             except:
                 pass
+        if arg.startswith("--out="):
+            output_dir = arg.split("=")[1]
     
     if full_test:
         print(f"TRYB: Pełne testy z {n_runs} powtórzeniami")
+        print(f"OPCJA: use_nn_start={use_nn_start}")
+        print(f"FOLDER: {output_dir}")
         print("UWAGA: To może zająć kilka minut...")
     else:
         print("TRYB: Szybki test (użyj --full dla pełnych testów)")
@@ -178,7 +184,8 @@ def main():
     all_results = {}
     
     for label, path in instances:
-        result = run_instance(label, path, full_test=full_test, n_runs=n_runs)
+        result = run_instance(label, path, full_test=full_test, n_runs=n_runs, 
+                              use_nn_start=use_nn_start, output_dir=output_dir)
         if result:
             all_results[label] = result
     

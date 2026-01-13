@@ -13,6 +13,7 @@ PROJEKT_IO/
 │   ├── ihc.py                 (Iterative Hill Climbing)
 │   ├── sa.py                  (Simulated Annealing)
 │   ├── ts.py                  (Tabu Search)
+│   ├── aco.py                 (Ant Colony Optimization)
 │   └── ga.py                  (Genetic Algorithm)
 ├── experiments/
 │   ├── __init__.py
@@ -398,22 +399,32 @@ Po:    [1, 4, 3, 2, 5]
 
 | Algorytm | Najlepszy wynik | Średni czas | Obserwacje |
 |----------|----------------|-------------|------------|
-| NN       | 8965.17        | 0.0002s     | Bazowy wynik referencyjny |
-| IHC      | 8422.85-10486  | 0.03-0.34s  | Znaczna wariancja wyników |
-| SA       | 8631.08        | 0.0349s     | 3.7% lepszy od NN |
-| TS       | 9998.19        | 0.0707s     | 11.5% gorszy od NN |
-| GA (Tournament+OX) | 11790.92 | 0.4874s  | 31.5% gorszy od NN |
-| GA (Roulette+PMX)  | 14695.68 | 0.4874s  | 64% gorszy od NN |
-| ACO      | 8394.10        | 0.5200s     | 6.4% LEPSZY od NN ⭐ |
+| NN       | 8793.76        | 0.0008s     | Strategia best_of_k=20 |
+| IHC      | 8768.25        | 0.0200s     | Stabilny baseline |
+| SA       | 8475.91        | 0.0100s     | Świetna zbieżność |
+| TS       | 8458.79        | 0.0670s     | Bardzo silny wynik |
+| GA       | 10373.39       | 0.2200s     | Poprawa o 12% od starych testów |
+| ACO      | 8394.10        | 0.1900s     | **NAJLEPSZY WYNIK!** ⭐ |
 
 **Ranking skuteczności:**
-1. **ACO: 8394.10** ⭐⭐ (NAJLEPSZY! 6.4% lepszy od NN)
-2. **IHC: 8422.85** ⭐ (bardzo dobry, 6.1% lepszy od NN)
-3. SA: 8631.08 (3.7% lepszy od NN)
-4. NN: 8965.17 (baseline)
-5. TS: 9998.19
-6. GA (Tournament): 11790.92
-7. GA (Roulette): 14695.68
+1. **ACO: 8394.10** ⭐⭐ (NAJLEPSZY!)
+2. **TS: 8458.79**
+3. **SA: 8475.91**
+4. **IHC: 8768.25**
+5. **NN: 8793.76**
+6. **GA: 10373.39**
+7. **GA (Roulette): 14526.61**
+
+### 4.1a. Instancja TSP_48 - START Z NN (HYBRYDA)
+
+| Algorytm | Najlepszy wynik | Średni czas | Obserwacje |
+|----------|----------------|-------------|------------|
+| NN (best of k) | 8793.76      | 0.0009s     | Punkt startowy dla reszty |
+| IHC      | 8351.81        | 0.1520s     | Stabilna poprawa |
+| SA       | 8620.54        | 0.0410s     | Dobra optymalizacja lokalna |
+| TS       | 8504.02        | 0.0850s     | Znacznie lepszy niż losowy start |
+| GA       | 8310.07        | 0.5100s     | **NAJLEPSZY WYNIK!** (Inversion mut) ⭐ |
+| ACO      | 8431.47        | 0.5200s     | Brak mechanizmu NN start |
 
 ---
 
@@ -421,22 +432,32 @@ Po:    [1, 4, 3, 2, 5]
 
 | Algorytm | Najlepszy wynik | Średni czas | Obserwacje |
 |----------|----------------|-------------|------------|
-| NN       | 2,699,580.70   | 0.0002s     | Bardzo szybki |
-| IHC      | 2,528,491.93   | 0.3527s     | Najlepszy wynik! |
-| SA       | 2,788,018.74   | 0.0456s     | 3.3% gorszy od NN |
-| TS       | 2,774,950.52   | 0.0940s     | 2.8% gorszy od NN |
-| GA (Tournament+OX) | 3,500,273 | 0.6990s   | 29.7% gorszy od NN |
-| GA (Roulette+PMX)  | 4,766,060 | 0.6990s   | 76.6% gorszy od NN |
-| ACO      | 2,497,772.92   | 0.7800s     | 7.5% LEPSZY od NN ⭐ |
+| NN       | 2,600,641.22   | 0.0020s     | Best of k=5 |
+| IHC      | 2,803,211.25   | 0.0400s     | Wyraźnie słabszy od mrówek |
+| SA       | 2,546,267.55   | 0.0150s     | 2% lepszy od NN |
+| TS       | 2,498,033.12   | 0.1100s     | 4% lepszy od NN |
+| GA       | 3,284,631.61   | 0.3500s     | Duży postęp (z 3.5 mln) |
+| ACO      | 2,496,615.42   | 0.3800s     | **NAJLEPSZY WYNIK!** ⭐ |
 
 **Ranking skuteczności:**
-1. **ACO: 2,497,772.92** ⭐⭐ (NAJLEPSZY! 7.5% lepszy od NN)
-2. **IHC: 2,528,491.93** ⭐ (bardzo dobry, 6.3% lepszy od NN)
-3. NN: 2,699,580.70 (baseline)
-4. TS: 2,774,950.52
-5. SA: 2,788,018.74
-6. GA (Tournament): 3,500,273
-7. GA (Roulette): 4,766,060
+1. **ACO: 2,496,615.42** ⭐⭐ (NAJLEPSZY!)
+2. **TS: 2,498,033.12** ⭐
+3. **SA: 2,546,267.55**
+4. **NN: 2,600,641.22**
+5. **IHC: 2,803,211.25**
+6. **GA: 3,284,631.61**
+7. **GA (Roulette): 4,128,030.31**
+
+### 4.2a. Instancja TSP_76 - START Z NN (HYBRYDA)
+
+| Algorytm | Najlepszy wynik | Średni czas | Obserwacje |
+|----------|----------------|-------------|------------|
+| NN (best of k) | 2,600,641    | 0.0019s     | Silny fundament |
+| IHC      | 2,527,119       | 0.3800s     | Solidna zbieżność |
+| SA       | 2,484,844       | 0.0520s     | **NAJLEPSZY WYNIK!** (Logarithmic) ⭐ |
+| TS       | 2,494,051       | 0.1100s     | Bardzo blisko rekordu |
+| GA       | 2,492,628       | 0.7200s     | Skok z 3.5 mln na 2.49 mln! |
+| ACO      | 2,500,330       | 0.7800s     | Spadek w rankingu (brak NN) |
 
 ---
 
@@ -444,22 +465,31 @@ Po:    [1, 4, 3, 2, 5]
 
 | Algorytm | Najlepszy wynik | Średni czas | Obserwacje |
 |----------|----------------|-------------|------------|
-| NN       | 3,438,520.84   | 0.0006s     | Najstabilniejszy |
-| IHC      | 4,516,277.54-11,844,655 | 0.03-0.41s | Duża wariancja! |
-| SA       | 6,166,706.72   | 0.0667s     | 79.3% gorszy od NN |
-| TS       | 4,770,350.55   | 0.1358s     | 38.7% gorszy od NN |
-| GA (Tournament+OX) | 14,744,979 | 1.3039s   | 328% gorszy od NN |
-| GA (Roulette+PMX)  | 21,166,099 | 1.3039s   | 515% gorszy od NN |
-| ACO      | 3,029,941.15   | 1.4500s     | 11.9% LEPSZY od NN ⭐ |
+| NN       | 2,988,632.49   | 0.0050s     | **NAJLEPSZY WYNIK!** (k=10) ⭐ |
+| IHC      | 7,065,885.27   | 0.0800s     | Słaba zbieżność przy dużej skali |
+| SA       | 4,394,367.48   | 0.0250s     | Wynik z reheatingiem |
+| TS       | 3,538,219.03   | 0.2500s     | Najlepsza z metaheurystyk |
+| GA       | 11,727,495.98  | 0.6500s     | Nadal walczy ze skalą |
+| ACO      | 3,031,806.20   | 0.7500s     | Bardzo blisko NN |
 
 **Ranking skuteczności:**
-1. **ACO: 3,029,941.15** ⭐⭐ (NAJLEPSZY! 11.9% lepszy od NN)
-2. **NN: 3,438,520.84** ⭐ (najstabilniejszy dla dużej skali)
-3. IHC: 4,516,277.54 (best case)
-4. TS: 4,770,350.55
-5. SA: 6,166,706.72
-6. GA (Tournament): 14,744,979
-7. GA (Roulette): 21,166,099
+1. **NN: 2,988,632.49** ⭐⭐ (NAJLEPSZY! Szokujący wynik zachłanny)
+2. **ACO: 3,031,806.20** ⭐
+3. **TS: 3,538,219.03**
+4. **SA: 4,394,367.48**
+5. **IHC: 7,065,885.27**
+6. **GA: 11,727,495.98**
+
+### 4.3a. Instancja TSP_127 - START Z NN (HYBRYDA)
+
+| Algorytm | Najlepszy wynik | Średni czas | Obserwacje |
+|----------|----------------|-------------|------------|
+| NN (best of k) | 2,988,632    | 0.0062s     | Wyznacza nowy benchmark |
+| IHC      | 2,974,601       | 0.4100s     | **NAJLEPSZY WYNIK!** ⭐ |
+| SA       | 2,980,209       | 0.0750s     | Bardzo efektywny |
+| TS       | 2,988,632       | 0.1600s     | Zrównany z NN start |
+| GA       | 3,178,746       | 1.3500s     | Poprawa o 78% (z 14.7 mln)! |
+| ACO      | 3,040,625       | 1.4500s     | Brak wsparcia dla NN start |
 
 ---
 
@@ -484,12 +514,12 @@ Po:    [1, 4, 3, 2, 5]
 
 | Instancja | Tournament+OX | Roulette+PMX | Różnica |
 |-----------|---------------|--------------|---------|
-| TSP_48    | 11,790.92     | 14,695.68    | -24.6%  |
-| TSP_76    | 3,500,273     | 4,766,060    | -36.2%  |
-| TSP_127   | 14,744,979    | 21,166,099   | -43.5%  |
+| TSP_48    | 10,373.39     | 14,526.61    | -28.6%  |
+| TSP_76    | 3,284,631.61  | 4,128,030.31 | -20.4%  |
+| TSP_127   | 11,727,495.98 | 19,898,613.46 | -41.1%  |
 
 **Wnioski:**
-- **Tournament >> Roulette:** Tournament konsekwentnie lepszy o 25-43%
+- **Tournament >> Roulette:** Tournament konsekwentnie lepszy o 20-41%
 - **Przyczyna:** Tournament zapewnia silniejszą presję selekcyjną
 - **Zalecenie:** Dla TSP preferować selekcję turniejową z krzyżowaniem OX
 
@@ -501,16 +531,16 @@ Po:    [1, 4, 3, 2, 5]
 
 | Algorytm | TSP_48 | TSP_76 | TSP_127 | Wzrost czasowy |
 |----------|--------|--------|---------|----------------|
-| NN       | 0.0002s | 0.0002s | 0.0006s | Linearny O(n²) |
-| IHC      | 0.03-0.34s | 0.35s | 0.03-0.41s | Stabilny |
-| SA       | 0.0349s | 0.0456s | 0.0667s | Umiarkowany |
-| TS       | 0.0707s | 0.0940s | 0.1358s | Umiarkowany |
-| GA       | 0.4874s | 0.6990s | 1.3039s | Najgorszy |
+| NN       | 0.0001s | 0.0001s | 0.0003s | Linearny O(n²) |
+| IHC      | 0.0200s | 0.0400s | 0.0800s | Stabilny |
+| SA       | 0.0100s | 0.0150s | 0.0250s | Umiarkowany |
+| TS       | 0.0670s | 0.1100s | 0.2500s | Umiarkowany |
+| GA       | 0.2200s | 0.3500s | 0.6500s | Najgorszy |
 
 **Obserwacje:**
 - **NN najbardziej skalowalny:** Czas rośnie powoli z liczbą miast
-- **GA najwolniejszy:** 2.5× wolniejszy dla TSP_127 niż dla TSP_48
-- **IHC niestabilny:** Duża wariancja czasu zależna od szczęścia w restartach
+- **GA najwolniejszy:** Czas ewolucji rośnie najszybciej ze skalą
+- **IHC niestabilny:** Zależność od limitu iteracji i szczęścia w restartach
 
 ---
 
@@ -519,90 +549,69 @@ Po:    [1, 4, 3, 2, 5]
 ### 6.1. Ranking algorytmów (ogólny)
 
 **Dla małych/średnich instancji (48-76 miast):**
-1. **ACO** - ABSOLUTNY ZWYCIĘZCA (8394-2,497,772) ⭐⭐⭐
-2. **IHC** - bardzo dobry kompromis jakość/czas (8422-2,528,491)
-3. **SA** - dobra jakość, szybki (8631-2,788,018)
-4. **NN** - bardzo szybki baseline (8965-2,699,580)
-5. **TS** - wolniejszy, gorsze wyniki (9998-2,774,950)
+1. **ACO** - ABSOLUTNY ZWYCIĘZCA (8394-2,496,615) ⭐⭐⭐
+2. **TS** - bardzo silny wynik, blisko mrówek (8458-2,498,033)
+3. **SA** - dobra jakość, najszybsza metaheurystyka
+4. **NN** - bardzo szybki baseline, świetny po best-of-k
+5. **IHC** - stabilny, ale rzadko wygrywa z TS/ACO
 6. **GA** - najwolniejszy, najgorsze wyniki
 
 **Dla dużych instancji (127+ miast):**
-1. **ACO** - ABSOLUTNY ZWYCIĘZCA (3,029,941) ⭐⭐⭐
-2. **NN** - najstabilniejszy i bardzo szybki (3,438,520)
-3. **IHC** - dobry ale niestabilny (4,516,277)
-4. **TS** - umiarkowane wyniki (4,770,350)
-5. **SA** - gorsze wyniki przy większej skali
+1. **NN** - ABSOLUTNY ZWYCIĘZCA (2,988,632) ⭐⭐⭐
+2. **ACO** - bardzo blisko NN, solidna praca mrówek
+3. **TS** - umiarkowane wyniki, najlepsza klasyczna metaheurystyka
+4. **SA** - przyzwoicie, szczególnie z reheatingiem
+5. **IHC** - ugrzęźnięcie w lokalnych minimach
 6. **GA** - nieakceptowalnie wolny i nieefektywny
 
-**NIESPODZIANKA: ACO WYGRYWA WE WSZYSTKICH 3 INSTANCJACH!**
-- TSP_48: ACO (8394) vs IHC (8422) - przewaga 0.3%
-- TSP_76: ACO (2.498M) vs IHC (2.528M) - przewaga 1.2%
-- TSP_127: ACO (3.030M) vs NN (3.439M) - przewaga 11.9%!
+**NIESPODZIANKA: NN WYGRYWA DLA TSP_127!**
+W tym konkretnym przebiegu testów (best_of_k=10) NN pokonał ACO o 1.4%. To pokazuje, że przy dużej skali prosta heurystyka startująca z 10 różnych miejsc może przebić złożone algorytmy, jeśli te nie mają dość czasu na pełną zbieżność.
 
 ---
 
 ### 6.2. Kluczowe obserwacje
 
-1. **ACO - NAJLEPSZY ALGORYTM DLA TSP:**
-   - Wygrał we wszystkich 3 instancjach (48, 76, 127 miast)
-   - Dla TSP_127: przewaga 11.9% nad NN, 33% nad IHC
-   - Dowodzi skuteczności swarm intelligence dla problemów kombinatorycznych
-   - **Wniosek:** Dla TSP, kolektywna inteligencja (feromony) >> lokalne przeszukiwania
+1. **ACO i TS - Liderzy Metaheurystyk:**
+   - TS po optymalizacji (40 kandydatów) niemal zrównał się z ACO dla TSP_48.
+   - Dla TSP_76 różnica między ACO a TS to zaledwie 0.06%!
 
-2. **Metaheurystyki populacyjne potężne ale wolne:**
-   - ACO i GA są najwolniejsze (0.5-1.5s), ale ACO daje najlepsze wyniki
-   - GA rozczarowuje mimo podobnego czasu - przyczyna: słaba adaptacja do TSP
-   - Przyczyna sukcesu ACO: feromony jako pamięć adaptacyjna vs GA (tylko genetyka)
+2. **Potęga NN w dużej skali:**
+   - Dla TSP_127 NN (2.98M) pokonał IHC (7.06M) ponad dwukrotnie.
+   - **Wniosek:** Bez hybrydyzacji, losowy start w dużej skali jest wyrokiem dla lokalnych poszukiwań.
 
-3. **Multistart (IHC) bardzo efektywny:**
-   - Drugi najlepszy dla TSP_48/76 (zaraz po ACO)
-   - Prosta strategia wielokrotnego restartu daje świetne wyniki
-   - Kluczowy parametr: liczba restartów (optymum: 10-20)
-
-4. **NN zaskakująco stabilny:**
-   - Dla TSP_127: drugi najlepszy wynik (po ACO)
-   - Prosty zachłanny algorytm pokonał zaawansowane SA, TS
-   - Przyczyna: deterministyczna konstrukcja lepsza niż losowe starty przy dużej skali
-
-5. **GA rozczarowujący dla TSP:**
-   - Długi czas wykonania (0.5-1.3s)
-   - Gorsze wyniki niż wszystkie inne metody
-   - Wymaga dużo dostrajania parametrów
-   - **Wniosek:** Dla TSP lepiej użyć ACO (swarm) lub lokalnych metod (IHC, SA)
+3. **GA wymaga hybrydyzacji:**
+   - GA bez NN startu (czysty) jest bezużyteczny dla TSP (wyniki rzędu 11-19 mln dla TSP_127).
+   - Hybrydyzacja (sekcja 4.3a) zmienia GA w lidera.
 
 ---
 
 ### 6.3. Rekomendacje praktyczne
 
-**Dla najlepszej jakości (TSP - konkurs, badania):**
-- Użyj **ACO** z dobrze dostrojonymi parametrami ⭐⭐⭐
-  - Parametry: n_ants=20-30, alpha=1.0, beta=2.0, rho=0.5
-  - Czas: 0.5-1.5s (akceptowalny dla najlepszych wyników)
-  - Jakość: konsekwentnie najlepsze rozwiązania we wszystkich instancjach
+**Dla najlepszej jakości (czysty start):**
+→ **ACO** lub **TS** (z dużą liczbą kandydatów).
 
-**Dla bardzo dobrej jakości przy krótszym czasie (<0.5s):**
-- Użyj **IHC** z 10-20 restartami i sąsiedztwem two-opt
-- Jakość: drugi najlepszy, bliski ACO
-- Alternatywnie: **SA** z odpowiednimi parametrami (alpha=0.995, temp=1000)
+**Dla najlepszej jakości (hybryda - POLECANE):**
+→ **GA / IHC / SA** połączone z startem z **NN**.
 
-**Dla szybkich obliczeń (<0.01s):**
-- Użyj **NN** z "best of k" startów (k=5-10)
-- Jakość: zadowalająca, szczególnie dla dużych instancji (TSP_127)
+**DLA CZASU RZECZYWISTEGO:**
+→ **NN** z best-of-k startami (k=10-20).
 
-**Dla aplikacji czasu rzeczywistego:**
-- **NN** (mikrosekunda) - jedyna realistyczna opcja
-- Rozważ NN jako inicjalizację + 1-2 iteracje lokalnej poprawy
+---
 
-**NIE używaj GA dla TSP:**
-- Gorsze wyniki niż wszystkie metody (włącznie z prostym NN)
-- Znacznie wolniejszy niż ACO przy gorszych wynikach
-- Lepiej sprawdzi się dla innych problemów kombinatorycznych
+### 6.4. REWOLUCJA HYBRYDOWA: WPŁYW STARTU NN NA WYNIKI
 
-**ODKRYCIE PROJEKTU:**
-Algorytm mrówkowy (ACO) okazał się zdecydowanie najlepszą metodą dla TSP,
-pokonując wszystkie klasyczne heurystyki. To potwierdza tezę, że problemy
-kombinatoryczne optymalizacyjne (jak TSP) są idealnym zastosowaniem dla
-algorytmów inspirowanych naturą wykorzystujących zbiorową inteligencję.
+Wprowadzenie opcji `--use-nn` (zaszczepienie metaheurystyk rozwiązaniem z Nearest Neighbor) przyniosło najbardziej spektakularne rezultaty w całym projekcie:
+
+1. **"Zmartwychwstanie" Algorytmu Genetycznego (GA):**
+   - Przed hybrydyzacją: GA był najgorszym algorytmem (11-19 mln dla TSP_127).
+   - Po hybrydyzacji: GA poprawił wynik dla TSP_127 o **78%**!
+
+2. **Poprawa skuteczności pozostałych metaheurystyk:**
+   - Algorytmy **SA i IHC** po zaszczepieniu NN osiągnęły nowe rekordy instancji (np. 2.48 mln dla TSP_76), wyprzedzając dotychczasowego lidera - ACO.
+   - **Wniosek:** Hybrydyzacja (NN + optymalizacja lokalna) to najskuteczniejsza strategia dla TSP w tym projekcie.
+
+3. **Detronizacja mrówek (ACO):**
+   - W testach hybrydowych ACO spadło w rankingu, ponieważ jako jedyne budowało trasy od zera, podczas gdy reszta algorytmów startowała z bardzo wysokiego pułapu wyznaczonego przez NN.
 
 ---
 
@@ -805,51 +814,33 @@ o różnej skali (49, 77, 128 miast) wykazały zaskakujące rezultaty.
 
 ### GŁÓWNE ODKRYCIE PROJEKTU:
 
-**Algorytm Mrówkowy (ACO) okazał się bezkonkurencyjnym zwycięzcą**, wygrywając 
-we **WSZYSTKICH 3 instancjach** problemu:
-
+**1. Faza I (Czyste Heurystyki): Algorytm Mrówkowy (ACO) bezkonkurencyjnym zwycięzcą.**
+W testach, gdzie algorytmy startowały od zera (losowo), ACO wygrywało we wszystkich 3 instancjach:
 - **TSP_48:** ACO (8394.10) vs IHC (8422.85) - przewaga 0.3% ⭐
 - **TSP_76:** ACO (2,497,772.92) vs IHC (2,528,491.93) - przewaga 1.2% ⭐
 - **TSP_127:** ACO (3,029,941.15) vs NN (3,438,520.84) - przewaga 11.9% ⭐⭐⭐
+To potwierdza skuteczność *swarm intelligence* jako metody budującej wysokiej jakości trasy bez pomocy innych heurystyk.
 
-To potwierdza skuteczność algorytmów **swarm intelligence** (zbiorowa inteligencja) 
-dla problemów kombinatorycznych optymalizacyjnych.
+**2. Faza II (Hybrydyzacja): Podejście NN + Metaheurystyka deklasuje wszystko.**
+Wprowadzenie inteligentnego startu (Nearest Neighbor Seeding) wyłoniło nowych liderów:
+- **TSP_48:** Zwycięzca **GA (8310.07)** – dzięki hybrydyzacji i mutacji typu *inversion*.
+- **TSP_76:** Zwycięzca **SA (2,484,844)** – rekordowa zbieżność dzięki NN.
+- **TSP_127:** Zwycięzca **IHC (2,974,601)** – najniższy koszt trasy.
 
-### RANKING KOŃCOWY (według skuteczności):
+**Wniosek końcowy:** Kluczem do sukcesu jest ewolucja podejścia: od czystych mrówkowych tras do hybrydowej optymalizacji opartej na fundamencie NN.
 
-1. **ACO (Ant Colony)** - absolutny zwycięzca wszystkich instancji
-   - Czas: 0.52-1.45s (wolniejszy, ale jakość rekompensuje)
-   - Jakość: konsekwentnie najlepsza (6-12% lepsza od drugiego miejsca)
+### RANKING KOŃCOWY (Wariant Hybrydowy):
 
-2. **IHC (Iterative Hill Climbing)** - bardzo dobry dla małych/średnich
-   - Czas: 0.03-0.40s (szybki)
-   - Jakość: drugie miejsce w TSP_48/76, trzecie w TSP_127
-
-3. **NN (Nearest Neighbor)** - zaskakująco stabilny
-   - Czas: <0.001s (najszybszy!)
-   - Jakość: drugie miejsce w TSP_127, bazowy benchmark
-
-4. **SA/TS (Simulated Annealing / Tabu Search)** - umiarkowane
-   - Czas: 0.03-0.14s (szybkie)
-   - Jakość: średnia, bez wyraźnych przewag
-
-5. **GA (Genetic Algorithm)** - rozczarowujący dla TSP
-   - Czas: 0.49-1.30s (wolny jak ACO, ale bez korzyści)
-   - Jakość: najgorsze wyniki ze wszystkich algorytmów
+1. **GA / IHC / SA** (ex aequo) – liderzy jakości po zaszczepieniu NN.
+2. **ACO** – najlepszy algorytm budujący trasy od zera, ale przegrywający z hybrydami.
+3. **NN** – najszybszy fundament, niezbędny do uzyskania rekordowych wyników.
+4. **TS** – stabilny, ale rzadko wygrywający z liderami.
 
 ### KLUCZOWE WNIOSKI NAUKOWE:
 
-1. **Swarm Intelligence >> Evolutionary Computing dla TSP:**
-   - ACO (mrówki + feromony) dominuje nad GA (genetyka)
-   - Przyczyna: feromony jako adaptacyjna pamięć zbiorowa vs. tylko selekcja
-
-2. **Prostota czasem wygrywa:**
-   - NN (najprostszy algorytm) pokonał zaawansowane SA, TS dla TSP_127
-   - Deterministyczna konstrukcja lepsza od losowych startów przy dużej skali
-
-3. **Parametry krytyczne:**
-   - Rozrzut wyników IHC (8422 vs 10486 dla TSP_48) pokazuje znaczenie tuningu
-   - Tournament selection >> Roulette (25-43% różnicy w GA)
+1. **Hybrydyzacja to "Srebrna Kula":** Połączenie NN z GA pozwoliło na 5-krotną poprawę wyników ewolucyjnych.
+2. **Presja selekcyjna:** W GA selekcja turniejowa z OX okazała się najbardziej odporna na przedwczesną zbieżność.
+3. **Waga lokalnego optimum:** SA i IHC udowodniły, że TSP o skali 100+ miast wymaga mechanizmów ucieczki z lokalnych minimów (temperatura/restarty), nawet przy dobrym starcie.
 
 4. **Kompromis czas-jakość:**
    - NN: <0.001s, umiarkowana jakość (aplikacje real-time)

@@ -1,0 +1,66 @@
+opis projektu
+Projekty wykonywane sa w grupach liczacych od 3 do 5 osób.
+Projekty beda bronione na ostatnich zajeciach. Obrona bedzie polegata na wyjasnieniu kodu,
+odpowiedzi na pytania z zakresu danego fragmentu kodu/sprawozdania, a takze na wyjasnieniu
+metody dziatania kazdego z algorytmów oraz przedstawieniu uzyskanych wyników i wysnutych
+wniosków. Obrona bedzie odbywac sie w grupach, jednak kazda osoba z grupy musi posiadac wiedze
+z zakresu przestanego projektu oraz umiec wyjasnic dziatanie danego algorytmu/heurystyki, poniewaz
+kazda z osób moze zostac poproszona o wyjasnienie danego zagadnienia.
+Projekt dotyczy problemu komiwojazera (TSP). Projekt obejmowaé powinien:
+- implementacje algorytmów: NN (najbliiszego sasiada), wspinaczki z multistartem (iteracyjna
+wspinaczka - IHC), symulowanego wyzarzania (SA), przeszukiwania Tabu (TS), algorytmy genetyczne
+(GA) oraz dowolnego innego (najlepiej ciekawego) algorytmu wybranego przez dana grupe, jak równiez
+propozycje minimum dwóch usprawnien dla wybranych algorytmów (z czego minimum jedno musi byc
+autorskim dzietem grupy, wymyslonym nie przez Chata) - wazny jest racjonalny pomyst, ktory jednak
+moze sie okazac, ze w rozwazanym przypadku nie pozwala na poprawe uzyskiwanych wynikow; kody
+algorytmów musza znalezc sie w wysytanych w ramach oddania projektu plikach,
+- kazdy z algorytmów powinien miec zaimplementowane przeszukiwanie trzech rodzajow ruchow
+(generowania rozwiazan sasiednich); algorytmy genetyczny powinny miec zaimplementowany co
+najmniej trzy rodzaje metod krzyzowania i minimum trzy metody doboru rodziców,
+
+- zestawienie wyników dla danego algorytmu z uwzglednieniem wptywu na wyniki róznych wartosci
+parametrów algorytmów (np. liczba iteracji, liczba iteracji bez poprawy, temperatura poczatkowa,
+szybkosc spadku temperatury, dtugosc listy tabu, metoda selekcji, metoda krzyzowania,
+prawdopodobienstwo mutacji, itd.); w przypadku kazdego parametru prosze o sprawdzenie (jezeli to
+mozliwe dia danego parametru) przynajmniej 4 roznych wartosci tego parametru,
+- analize uzyskanych wyników wraz z wnioskami, gdzie punktem odniesienia do porównania
+efektywnosci heurystyk bedzie wynik uzyskany przez Solver Excela,
+- sklad grupy.
+Obliczenia dla kazdej kombinacji parametrów dla kazdej z trzech instancji problemu komiwojazera
+(pliki z instancjami dostepne sa do pobrania na Teamsach) powinny zostac wykonane wielokrotnie
+(min. 5 razy) dla algorytmów zawierajacych elementy losowosci (równiez w przypadku Solvera). W
+zestawieniach prosze przede wszystkim uwzgledniac wartosci minimalne oraz srednie uzyskane dla
+róznych wartosci parametrów. W zestawieniach i wnioskach prosze uwzglednic (zamiescic w
+sprawozdaniu) czas wykonywania danego algorytmu.
+Minimalna liczba parametrów do przetestowania dla ka¿dego z algorytmów (o ile dany algorytm ma
+na tyle parametrów): liczba osób w grupie (nie mniej niz 3). Rodzaj sasiedztwa mozna uwzglednic w
+liczbie analizowanych parametrów.
+Najlepsze wyniki dla kazdego z algorytmów dla danego przypadku nalezy w sposób czytelny zawrzec
+w dodatkowym pliku Excela, wraz z uszeregowaniami, które pozwolity taki wynik uzyskac (plik z
+szablonem do pobrania w materiatach z zajec).
+Najlepsze wyniki (sposród wszystkich grup) dla danej instancji problemu, zostana nagrodzone
+dodatkowymi punktami: +5% do oceny koncowej za najlepszy wynik dla danej instancji problemu (w
+przypadku uzyskania najlepszego wyniku przez kilka grup, dodatkowe punkty zostana podzielone
+pomiedzy grupy).
+
+Termin wysytania sprawozdania zostanie podany na kanale ogólnym. Za kazdy rozpoczety dzien
+opóínienia maksymalna punktacja zostaje zmniejszona o 25%. Projekt wysyta jedna osoba z danej
+grupy.
+Algorytmy moga byc pisane w dowolnym jezyku.
+Jezeli pojawi sie koniecznosé uscislenia wytycznych - informacje o zmianach/uscisleniach beda
+pojawiac sie na kanale Teams.
+Dla zainteresowanych mozliwe jest podpiecie narzedzia do optymalizacji hiperparametrów modelu
+(typu Optuna) i wykonanie dodatkowych analiz, co pozwoli na podniesienie oceny z projektu.
+
+Przyktadowe parametry algorytmów:
+- miasto startowe [NN],
+- rodzaj sasiedztwa [IHC, SA, TS, GA (mutacja)],
+- kryterium stopu (np. liczba iteracji, liczba iteracji bez poprawy) [IHC, SA, TS, GA],
+- liczba iteracji dla wybranego kryterium stopu [IHC, SA, TS, GA],
+- temperatura poczatkowa, metoda redukcji temperatury, liczba sprawdzanych rozwiazan dla danej
+temperatury [SA],
+- dtugosc listy tabu [TS],
+- metoda doboru rodziców, prawdopodobienstwo krzyzowania, rodzaj krzyzowania, wielkosé
+populacji, metoda tworzenia populacji potomstwa, prawdopodobienstwo mutacji [GA].
+Jako dodatkowy parametr moina równiez potraktowac wptyw jakosci rozwiazania poczatkowego (w
+omawianym przypadku bedzie to dtugosé trasy komiwojazera) na wielkosé uzyskanego rozwiazania.

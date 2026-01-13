@@ -8,47 +8,55 @@ Obsługuje format TSPLIB - standardowy format plików z danymi TSP.
 
 def load_tsp_file(path: str):
     """
-    Wczytuje współrzędne miast z pliku TSP.
+    Wczytuje macierz odległości z pliku .tsp.
     
-    Automatycznie wykrywa linie ze współrzędnymi (x, y).
-    Obsługuje różne formaty: z przecinkami, spacjami, numerami linii.
+    Pliki w tym projekcie (Dane_TSP_*.tsp) zawierają pełną macierz odległości,
+    gdzie separatorem dziesiętnym jest przecinek.
+    Pierwszy wiersz i pierwsza kolumna to indeksy miast (do pominięcia).
     
     Args:
         path: ścieżka do pliku .tsp
     
     Returns:
-        Lista krotek [(x1,y1), (x2,y2), ...] - współrzędne miast
-    
-    Przykład użycia:
-        coords = load_tsp_file("instances/Dane_TSP_48.tsp")
-        tsp = TSP(coords)
+        Macierz NxN (lista list floatów)
     """
-    coords = []  # Lista współrzędnych do zwrócenia
-
+    matrix = []
+    
     with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        # Pomiń pierwszy wiersz (nagłówek z numerami kolumn)
+        next(f, None)
+        
         for line in f:
-            line = line.strip()  # Usuń białe znaki
-
+            line = line.strip()
             if not line:
-                continue  # Pomiń puste linie
-
-            # Zamień przecinki na spacje (różne formaty plików)
-            line = line.replace(",", " ")
+                continue
+                
+            # Zamień polskie przecinki na kropki (format float)
+            line = line.replace(",", ".")
+            
             parts = line.split()
-
-            # Spróbuj wyłowić liczby z linii
-            numbers = []
-            for p in parts:
+            
+            # Wiersz powinien zaczynać się od indeksu, potem wartości
+            # Ignorujemy pierwszy element (indeks wiersza)
+            row_values = []
+            # Startujemy od 1, bo parts[0] to numer miasta
+            for p in parts[1:]:
                 try:
-                    numbers.append(float(p))
+                    val = float(p)
+                    row_values.append(val)
                 except ValueError:
-                    pass  # Pomiń tekst (nagłówki, komentarze)
-
-            # Jeśli są co najmniej 2 liczby → to współrzędne (x, y)
-            # Bierzemy ostatnie dwie liczby (w formacie: nr x y)
-            if len(numbers) >= 2:
-                x = numbers[-2]  # Przedostatnia = x
-                y = numbers[-1]  # Ostatnia = y
-                coords.append((x, y))
-
-    return coords
+                    pass
+            
+            if row_values:
+                matrix.append(row_values)
+    
+    # Naprawa dla plików z brakującymi zerami na przekątnej (np. TSP_76)
+    # Gdzie podwójny tabulator został zjedzony przez split()
+    n = len(matrix)
+    for i in range(n):
+        if len(matrix[i]) == n - 1:
+            # Brakuje jednego elementu: zera na przekątnej
+            matrix[i].insert(i, 0.0)
+            
+    print(f"[DEBUG] Wczytano macierz o wymiarach: {len(matrix)} x {len(matrix[0]) if matrix else 0}")
+    return matrix
